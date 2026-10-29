@@ -1,31 +1,61 @@
 'use client';
 import {usePathname,useRouter} from 'next/navigation';
-import {useEffect,useState} from 'react';
+import {useEffect,useRef,useState} from 'react';
 import {logicalParent} from '@/lib/navigation';
-// Native history is authoritative; indexed state identifies whether forward entries exist.
-// This only tracks destinations inside the current RoboLN tab, not external browser entries.
+
+type RouteStack={paths:string[];index:number};
+const initial:RouteStack={paths:[],index:0};
+/**
+ * Track only in-app routes visited in this tab. Native browser popstate is the
+ * authority for Back/Forward, while route changes record client-side pushes.
+ * A direct deep link has no *known* previous in-app route and uses its parent.
+ * Never use history.length to infer that a forward entry exists.
+ */
 export function useNavHistory(){
-  const path=usePathname();const router=useRouter();
-  const [index,setIndex]=useState(0);const [max,setMax]=useState(0);
-  useEffect(()=>{
-    const oldPush=history.pushState.bind(history);const oldReplace=history.replaceState.bind(history);
-    let current=Number(history.state?.__robolnIndex ?? 0);
-    let highest=Number(sessionStorage.getItem('roboln-history-max') ?? current);
-    oldReplace({...history.state,__robolnIndex:current},'',location.href);
-    queueMicrotask(()=>{setIndex(current);setMax(highest);});
-    history.pushState=function(data:unknown,unused:string,url?:string|URL|null){
-      current+=1;highest=current;sessionStorage.setItem('roboln-history-max',String(highest));
-      const v=oldPush({...((data&&typeof data==='object')?data:{}),__robolnIndex:current},unused,url);
-      setIndex(current);setMax(highest);return v;
-    };
-    history.replaceState=function(data:unknown,unused:string,url?:string|URL|null){
-      return oldReplace({...((data&&typeof data==='object')?data:{}),__robolnIndex:current},unused,url);
-    };
-    const popped=()=>{current=Number(history.state?.__robolnIndex??0);setIndex(current);setMax(highest);};
-    window.addEventListener('popstate',popped);
-    return()=>{history.pushState=oldPush;history.replaceState=oldReplace;window.removeEventListener('popstate',popped);};
-  },[]);
-  const back=()=>{if(index>0)router.back();else router.push(logicalParent(path));};
-  const forward=()=>{if(index<max)window.history.forward();};
-  return {back,forward,canForward:index<max,canBack:index>0,parent:logicalParent(path)};
+ const path=usePathname();
+ const router=useRouter();
+ const pendingPop=useRef(false);
+ const stack=useRef<RouteStack>(initial);
+ const [state,setState]=useState<RouteStack>(initial);
+
+ useEffect(()=>{
+  const pop=()=>{pendingPop.current=true;};
+  window.addEventListener('popstate',pop);
+  return()=>window.removeEventListener('popstate',pop);
+ },[]);
+
+ useEffect(()=>{
+  const previous=stack.current;
+  let next:RouteStack;
+  if(previous.paths.length===0){
+   next={paths:[path],index:0};
+  }else if(previous.paths[previous.index]===path){
+   pendingPop.current=false;
+   return;
+  }else if(pendingPop.current){
+   // The URL has already moved through native session history.
+   const before=previous.paths[previous.index-1];
+   const after=previous.paths[previous.index+1];
+   if(path===before)next={...previous,index:previous.index-1};
+   else if(path===after)next={...previous,index:previous.index+1};
+   else{
+    const known=previous.paths.lastIndexOf(path);
+    next=known>=0?{...previous,index:known}:{paths:[...previous.paths.slice(0,previous.index+1),path],index:previous.index+1};
+   }
+  }else{
+   // A new Link/router.push truncates our known forward destinations.
+   const paths=[...previous.paths.slice(0,previous.index+1),path];
+   next={paths,index:paths.length-1};
+  }
+  pendingPop.current=false;
+  stack.current=next;
+  setState(next);
+ },[path]);
+
+ const back=()=>{
+  if(state.index>0)window.history.back();
+  else router.push(logicalParent(path));
+ };
+ const forward=()=>{if(state.index<state.paths.length-1)window.history.forward();};
+ return {back,forward,canForward:state.index<state.paths.length-1,canBack:state.index>0,parent:logicalParent(path)};
 }
