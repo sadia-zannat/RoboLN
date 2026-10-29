@@ -1,8 +1,8 @@
 'use client';
-import {useEffect,useState,FormEvent} from 'react';import Link from 'next/link';import {useRouter} from 'next/navigation';
-import {ArrowRight,Settings2,Cpu,ShieldCheck,Users,Save,BookOpen,Layers,RadioTower,ClipboardCheck} from 'lucide-react';
+import {useEffect,useState,FormEvent} from 'react';import Link from 'next/link';
+import {ArrowRight,Settings2,Users,Save,BookOpen,Layers,RadioTower,ClipboardCheck} from 'lucide-react';
 import {useProject} from '@/components/project-context';import {api,Hardware} from '@/lib/api';import {Heading,Panel,Notice} from '@/components/ui';import {projectUrl} from '@/lib/navigation';
-export default function ProjectDetail(){const p=useProject();const router=useRouter();const editable=p.role!=='viewer';
+export default function ProjectDetail(){const p=useProject();const editable=p.role!=='viewer';
  const [hardware,setHardware]=useState<Hardware>(null);const [members,setMembers]=useState<{id:string;email:string;role:string;full_name:string}[]>([]);
  const [editing,setEditing]=useState(false);const [name,setName]=useState(p.name);const [description,setDesc]=useState(p.description);const [goal,setGoal]=useState(p.goal);
  const [device,setDevice]=useState('OTHER');const [board,setBoard]=useState('');const [rev,setRev]=useState('');const [memberEmail,setMemberEmail]=useState('');const [memberRole,setMemberRole]=useState<'editor'|'viewer'>('viewer');const [message,setMessage]=useState('');
