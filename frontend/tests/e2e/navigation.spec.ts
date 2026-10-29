@@ -83,8 +83,9 @@ test('per-project draft isolation across navigation and refresh',async({page})=>
  await expect(page.getByLabel('Your engineering draft')).toHaveValue('Private first-project draft');
 });
 
-test('public product titles and keyboard modal dismissal',async({page})=>{
+test('public product titles and keyboard modal dismissal',async({page},info)=>{
  await register(page);await expect(page).toHaveTitle(/Projects \| RoboLN/);
+ if(info.project.name.startsWith('mobile'))await page.getByRole('button',{name:'Open navigation'}).click();
  await page.getByRole('button',{name:'Search your projects'}).click();
  await expect(page.getByRole('dialog',{name:'Find project'})).toBeVisible();
  await page.keyboard.press('Escape');
