@@ -53,9 +53,20 @@ export function useNavHistory(){
  },[path]);
 
  const back=()=>{
-  if(state.index>0)window.history.back();
-  else router.push(logicalParent(path));
+  if(state.index>0){
+   // Update the UI synchronously: the new route may render before Next
+   // publishes a pathname change from the browser's popstate event.
+   const next={...stack.current,index:state.index-1};
+   stack.current=next;setState(next);
+   window.history.back();
+  }else router.push(logicalParent(path));
  };
- const forward=()=>{if(state.index<state.paths.length-1)window.history.forward();};
+ const forward=()=>{
+  if(state.index<state.paths.length-1){
+   const next={...stack.current,index:state.index+1};
+   stack.current=next;setState(next);
+   window.history.forward();
+  }
+ };
  return {back,forward,canForward:state.index<state.paths.length-1,canBack:state.index>0,parent:logicalParent(path)};
 }
