@@ -1,0 +1,5 @@
+
+> roboln-frontend@0.1.0 lint
+> eslint . --max-warnings=0
+
+sh: 1: eslint: not found

@@ -1,0 +1,61 @@
+Generating /mnt/data/roboln_v2_work/RoboLN-v2/backend/alembic/versions/320cc41a249c_phase01_frozen_snapshot.py ...  FAILED
+Traceback (most recent call last):
+  File "/opt/pyvenv/bin/alembic", line 8, in <module>
+    sys.exit(main())
+             ~~~~^^
+  File "/opt/pyvenv/lib/python3.13/site-packages/alembic/config.py", line 1047, in main
+    CommandLine(prog=prog).main(argv=argv)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^
+  File "/opt/pyvenv/lib/python3.13/site-packages/alembic/config.py", line 1037, in main
+    self.run_cmd(cfg, options)
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^
+  File "/opt/pyvenv/lib/python3.13/site-packages/alembic/config.py", line 971, in run_cmd
+    fn(
+    ~~^
+        config,
+        ^^^^^^^
+        *[getattr(options, k, None) for k in positional],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        **{k: getattr(options, k, None) for k in kwarg},
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/opt/pyvenv/lib/python3.13/site-packages/alembic/command.py", line 316, in revision
+    scripts = [script for script in revision_context.generate_scripts()]
+                                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/opt/pyvenv/lib/python3.13/site-packages/alembic/autogenerate/api.py", line 667, in generate_scripts
+    yield self._to_script(generated_revision)
+          ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "/opt/pyvenv/lib/python3.13/site-packages/alembic/autogenerate/api.py", line 572, in _to_script
+    return self.script_directory.generate_revision(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        migration_script.rev_id,
+        ^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<7 lines>...
+        **template_args,
+        ^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/opt/pyvenv/lib/python3.13/site-packages/alembic/script/base.py", line 727, in generate_revision
+    self._generate_template(
+    ~~~~~~~~~~~~~~~~~~~~~~~^
+        Path(self.dir, "script.py.mako"),
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<10 lines>...
+        **kw,
+        ^^^^^
+    )
+    ^
+  File "/opt/pyvenv/lib/python3.13/site-packages/alembic/script/base.py", line 568, in _generate_template
+    util.template_to_file(src, dest, self.output_encoding, **kw)
+    ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/pyvenv/lib/python3.13/site-packages/alembic/util/pyfiles.py", line 32, in template_to_file
+    template = Template(filename=_preserving_path_as_str(template_file))
+  File "/opt/pyvenv/lib/python3.13/site-packages/mako/template.py", line 310, in __init__
+    module = self._compile_from_file(path, filename)
+  File "/opt/pyvenv/lib/python3.13/site-packages/mako/template.py", line 385, in _compile_from_file
+    data = util.read_file(filename)
+  File "/opt/pyvenv/lib/python3.13/site-packages/mako/util.py", line 375, in read_file
+    with open(path, mode) as fp:
+         ~~~~^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: 'alembic/script.py.mako'

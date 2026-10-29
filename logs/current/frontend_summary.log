@@ -1,0 +1,41 @@
+===== RUN npm install --package-lock-only --ignore-scripts --fetch-retries=0 --fetch-timeout=7000 =====
+EXIT 124
+===== RUN npm ci --offline =====
+EXIT 1
+npm error [-w|--workspace <workspace-name> [-w|--workspace <workspace-name> ...]]
+npm error [-ws|--workspaces] [--include-workspace-root] [--install-links]
+npm error
+npm error aliases: clean-install, ic, install-clean, isntall-clean
+npm error
+npm error Run "npm help ci" for more info
+npm error A complete log of this run can be found in: /home/oai/.npm/_logs/2026-10-29T06_00_42_104Z-debug-0.log
+===== RUN npm run lint =====
+EXIT 127
+
+> roboln-frontend@0.1.0 lint
+> eslint . --max-warnings=0
+
+sh: 1: eslint: not found
+===== RUN npm run typecheck =====
+EXIT 2
+components/workspace-tabs.tsx(4,81): error TS2875: This JSX tag requires the module path 'react/jsx-runtime' to exist, but none could be found. Make sure you have types for the appropriate package installed.
+components/workspace-tabs.tsx(4,382): error TS7026: JSX element implicitly has type 'any' because no interface 'JSX.IntrinsicElements' exists.
+next.config.ts(1,33): error TS2307: Cannot find module 'next' or its corresponding type declarations.
+next.config.ts(5,21): error TS2580: Cannot find name 'process'. Do you need to install type definitions for node? Try `npm i --save-dev @types/node`.
+playwright.config.ts(1,36): error TS2307: Cannot find module '@playwright/test' or its corresponding type declarations.
+playwright.config.ts(13,152): error TS2580: Cannot find name 'process'. Do you need to install type definitions for node? Try `npm i --save-dev @types/node`.
+playwright.config.ts(14,91): error TS2580: Cannot find name 'process'. Do you need to install type definitions for node? Try `npm i --save-dev @types/node`.
+===== RUN npm run build =====
+EXIT 127
+
+> roboln-frontend@0.1.0 build
+> next build
+
+sh: 1: next: not found
+===== RUN npm run test:e2e =====
+EXIT 1
+
+> roboln-frontend@0.1.0 test:e2e
+> playwright test
+
+error: unknown command 'test'

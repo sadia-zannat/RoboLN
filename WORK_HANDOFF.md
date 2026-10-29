@@ -1,0 +1,8 @@
+# RoboLN — Phase 01 unfinished gate handoff
+
+1. **Continue the same recovered project.** Do not start fresh. New user Final Master Prompt supersedes October 24 instructions where they conflict.
+2. Preserve existing local source and `RoboLN_Phase_01_local_history.bundle`. GitHub `sadia-zannat/RoboLN` was public but empty with reported push permission; first actual GitHub `create_file` returned HTTP 403 `Resource not accessible by integration`, so **ZERO remote commits** were made. User/admin needs to grant GitHub integration repository Contents: Read and write, then push locally committed baseline and incremental fixes; never force-push or expose secrets.
+3. Generate a real frontend lockfile from npm registry, e.g. GitHub Actions `.github/workflows/resolve-lockfile.yml` after repository write access is fixed; commit `frontend/package-lock.json`. Do not synthesize hashes. Then run clean `npm ci`, ESLint, strict TypeScript, Next production build and Playwright Chromium all breakpoints and both themes; repair every failure.
+4. Check page titles, History Back/Forward, mobile 320px overflow, shell theme persistence, 403/404 handling, project-context isolation and the new draft-isolation browser test. Capture actual screenshots; do not use mockups.
+5. Re-run Python pytest (now 8), Alembic upgrade/downgrade/upgrade and real Uvicorn smoke against clean-extracted artifact. Inspect repo for sensitive files and license provenance.
+6. Remain in Phase 01 until every locally runnable mandatory gate passes. Phase 02 later handles universal project planning, genuine permitted Meta open-weight integration, source grounding and firmware; later phases synchronized 3D/camera/telemetry. Never infer hardware safety or live readings.

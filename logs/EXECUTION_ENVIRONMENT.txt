@@ -1,0 +1,9 @@
+RoboLN phase01 actual build execution
+UTC 2026-10-24T13:04:36Z
+Node v22.16.0
+npm 10.9.2
+Python Python 3.13.5
+Chromium /usr/bin/chromium
+Host: sandbox Linux; not user Windows
+Registry DNS: blocked EAI_AGAIN
+No Meta API / GPU / USB / camera calls

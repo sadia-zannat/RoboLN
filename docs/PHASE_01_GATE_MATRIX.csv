@@ -1,0 +1,19 @@
+gate,status,evidence_or_blocker
+Fresh codebase,PASS,Independent authored repo no legacy source imported
+Spec and schema intake,PASS,37 ZIP members 36 source hashes verified
+Backend auth/Argon2id,PASS,Password hashing CSRF session tests
+Project CRUD tenant RBAC,PASS,pytest
+Local SQLite persistence,PASS,pytest plus alembic
+Alembic roundtrip,PASS,upgrade downgrade upgrade actual DB revision
+Actual Uvicorn HTTP,PASS,12 localhost checks
+User profile consent export delete,PASS,pytest
+Theme UI implementation,UNVERIFIED,Source exists no browser
+Home Back Forward breadcrumbs,UNVERIFIED,Source exists no browser
+Mobile responsive visual,NOT_RUN,No Next runtime
+Next npm ci,BLOCKED,Registry unreachable no lock
+Next lint and typecheck,BLOCKED,Missing dependencies
+Next production build,BLOCKED,Missing dependencies
+Playwright desktop tablet mobile,BLOCKED,Missing Next runtime and test dependencies
+Actual screenshot inspection,NOT_RUN,No functional Next instance
+Prod HTTPS/Postgres,NOT_RUN,Not Phase 01 verified
+Meta API hardware telemetry,NOT_RUN,Later phases external blockers

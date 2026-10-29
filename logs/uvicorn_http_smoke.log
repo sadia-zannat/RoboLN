@@ -1,0 +1,7 @@
+Traceback (most recent call last):
+  File "/mnt/data/roboln_v2_work/RoboLN-v2/scripts/smoke_http.py", line 26, in <module>
+    a=verify(c.post('/api/auth/register',json={'full_name':'HTTP smoke','email':f'smoke-{unique}@example.test','password':'SmokePass123456!'}),201)
+  File "/mnt/data/roboln_v2_work/RoboLN-v2/scripts/smoke_http.py", line 21, in verify
+    assert response.status_code==expected,(response.request.method,response.request.url,response.status_code,response.text)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ('POST', URL('http://127.0.0.1:18766/api/auth/register'), 422, '{"detail":[{"type":"value_error","loc":["body","email"],"msg":"value is not a valid email address: The part after the @-sign is a special-use or reserved name that cannot be used with email.","input":"smoke-cbe60a053e@example.test","ctx":{"reason":"The part after the @-sign is a special-use or reserved name that cannot be used with email."}}]}')

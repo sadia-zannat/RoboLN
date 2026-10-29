@@ -1,0 +1,1 @@
+No browser screenshots were generated. Next.js installation and rendering were blocked by npm registry DNS/cache; Playwright browser tests were not executed successfully.

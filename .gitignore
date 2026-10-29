@@ -1,0 +1,16 @@
+.env
+*.db
+*.sqlite*
+__pycache__/
+.pytest_cache/
+node_modules/
+.next/
+playwright-report/
+test-results/
+*.pyc
+.DS_Store
+coverage/
+*.tsbuildinfo
+logs/current/smoke_http_*.db
+logs/playwright-report/
+logs/browser-*.png

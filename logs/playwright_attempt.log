@@ -1,0 +1,5 @@
+
+> roboln-v2-frontend@2.0.0-phase01 test:e2e
+> playwright test
+
+error: unknown command 'test'
