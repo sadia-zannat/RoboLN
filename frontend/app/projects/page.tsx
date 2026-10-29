@@ -7,7 +7,7 @@ export default function Projects(){
  const router=useRouter();const [items,setItems]=useState<Project[]>([]);const [loading,setLoading]=useState(true);const [error,setError]=useState('');
  const [search,setSearch]=useState('');const [show,setShow]=useState(false);const [name,setName]=useState('');const [desc,setDesc]=useState('');const [goal,setGoal]=useState('');const [busy,setBusy]=useState(false);const [showArchived,setShowArchived]=useState(false);
  async function reload(){try{setItems(await api<Project[]>('/projects'));setError('');}catch(e){setError(e instanceof Error?e.message:'Cannot load projects')}finally{setLoading(false);}}
- useEffect(()=>{void reload();},[]);
+ useEffect(()=>{let live=true;api<Project[]>('/projects').then(items=>{if(live){setItems(items);setLoading(false);}}).catch(e=>{if(live){setError(e instanceof Error?e.message:'Cannot load projects');setLoading(false);}});return()=>{live=false};},[]);
  async function create(e:FormEvent){e.preventDefault();setBusy(true);setError('');try{const p=await api<Project>('/projects',{method:'POST',body:JSON.stringify({name,description:desc,goal})});router.push(projectUrl(p.id));}catch(e){setError(e instanceof Error?e.message:'Cannot create project')}finally{setBusy(false)}}
  async function archive(p:Project){if(!confirm((p.archived?'Restore':'Archive')+' '+p.name+'?'))return;try{await api('/projects/'+p.id+'/archive',{method:'POST'});await reload();}catch(e){setError(e instanceof Error?e.message:'Unable to archive')}}
  async function remove(p:Project){if(!confirm('Permanently delete "'+p.name+'"? This cannot be undone.'))return;try{await api('/projects/'+p.id,{method:'DELETE'});await reload();}catch(e){setError(e instanceof Error?e.message:'Unable to delete')}}

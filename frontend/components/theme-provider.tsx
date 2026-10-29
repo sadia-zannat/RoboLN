@@ -7,7 +7,7 @@ function apply(mode:Mode){const actual=mode==='system'?(matchMedia('(prefers-col
 export function ThemeProvider({children}:{children:React.ReactNode}){
   const [mode,setCurrent]=useState<Mode>('system');
   useEffect(()=>{
-    const stored=localStorage.getItem('roboln-theme');const initial=(stored==='light'||stored==='dark'||stored==='system')?stored:'system';setCurrent(initial);apply(initial);
+    const stored=localStorage.getItem('roboln-theme');const initial=(stored==='light'||stored==='dark'||stored==='system')?stored:'system';queueMicrotask(()=>setCurrent(initial));apply(initial);
     const mq=matchMedia('(prefers-color-scheme: dark)');const update=()=>apply((localStorage.getItem('roboln-theme') as Mode)||'system');mq.addEventListener('change',update);return()=>mq.removeEventListener('change',update);
   },[]);
   const setMode=(value:Mode)=>{localStorage.setItem('roboln-theme',value);setCurrent(value);apply(value);};

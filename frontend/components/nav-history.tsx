@@ -12,7 +12,7 @@ export function useNavHistory(){
     let current=Number(history.state?.__robolnIndex ?? 0);
     let highest=Number(sessionStorage.getItem('roboln-history-max') ?? current);
     oldReplace({...history.state,__robolnIndex:current},'',location.href);
-    setIndex(current);setMax(highest);
+    queueMicrotask(()=>{setIndex(current);setMax(highest);});
     history.pushState=function(data:unknown,unused:string,url?:string|URL|null){
       current+=1;highest=current;sessionStorage.setItem('roboln-history-max',String(highest));
       const v=oldPush({...((data&&typeof data==='object')?data:{}),__robolnIndex:current},unused,url);
