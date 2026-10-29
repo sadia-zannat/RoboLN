@@ -1,6 +1,6 @@
 import {defineConfig,devices} from '@playwright/test';
 export default defineConfig({
-  testDir:'../tests/e2e', timeout:45000, retries:0, workers:1,
+  testDir:'./tests/e2e', timeout:45000, retries:0, workers:1,
   reporter:[['list'],['html',{outputFolder:'../logs/playwright-report',open:'never'}]],
   use:{baseURL:'http://127.0.0.1:3000',trace:'retain-on-failure',screenshot:'only-on-failure'},
   projects:[
