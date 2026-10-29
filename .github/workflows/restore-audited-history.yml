@@ -1,0 +1,48 @@
+name: Restore audited RoboLN local Git history
+on:
+  push:
+    paths:
+      - '.recovery/local_history.bundle'
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  restore:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+      - name: Verify transferred historical Git bundle
+        shell: bash
+        run: |
+          test -s .recovery/local_history.bundle
+          echo "91a942969569885c4900b1067f94f1f084abad8428f686609a5468fd24c85865  .recovery/local_history.bundle" | sha256sum -c -
+          git bundle verify .recovery/local_history.bundle
+      - name: Merge original commits preserving their parent history
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git fetch .recovery/local_history.bundle main:refs/remotes/recovered/main
+          git merge --allow-unrelated-histories --no-commit -s ours refs/remotes/recovered/main
+          git checkout refs/remotes/recovered/main -- .
+          git rm -f .recovery/local_history.bundle
+          git add -A
+          git commit -m "chore: merge audited historical RoboLN checkpoint commits"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          registry-url: 'https://registry.npmjs.org'
+      - name: Generate reproducible frontend dependency lockfile
+        working-directory: frontend
+        run: npm install --package-lock-only --ignore-scripts --no-audit --no-fund
+      - name: Commit resolved lockfile separately
+        shell: bash
+        run: |
+          git add frontend/package-lock.json
+          git commit -m "build: save registry-resolved npm lockfile"
+      - name: Publish only fast-forward commits
+        run: git push origin HEAD:main
