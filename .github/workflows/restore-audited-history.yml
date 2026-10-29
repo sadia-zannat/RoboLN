@@ -1,8 +1,9 @@
-name: Restore audited RoboLN local Git history
+name: Restore audited RoboLN source without workflow-token escalation
 on:
   push:
     paths:
       - '.recovery/local_history.bundle'
+      - '.github/workflows/restore-audited-history.yml'
   workflow_dispatch:
 permissions:
   contents: write
@@ -15,34 +16,38 @@ jobs:
         with:
           fetch-depth: 0
           persist-credentials: true
-      - name: Verify transferred historical Git bundle
-        shell: bash
+      - name: Verify original Git history bundle
         run: |
           test -s .recovery/local_history.bundle
           echo "91a942969569885c4900b1067f94f1f084abad8428f686609a5468fd24c85865  .recovery/local_history.bundle" | sha256sum -c -
           git bundle verify .recovery/local_history.bundle
-      - name: Merge original commits preserving their parent history
+      - name: Recover historical source snapshot (do not backdate new commit)
         shell: bash
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git fetch .recovery/local_history.bundle main:refs/remotes/recovered/main
-          git merge --allow-unrelated-histories --no-commit -s ours refs/remotes/recovered/main
           git checkout refs/remotes/recovered/main -- .
+          # GITHUB_TOKEN cannot update workflow files; leave existing workflows
+          # untouched. The original source history remains auditable in the
+          # transferred bundle within GitHub's existing commit history.
+          git restore --source=HEAD --staged --worktree .github/workflows/resolve-lockfile.yml
+          git rm -f --ignore-unmatch .github/workflows/ci.yml || true
           git rm -f .recovery/local_history.bundle
+          printf '%s\n' '# Historical source provenance' '' 'The pre-existing Phase 01 source was created before the hackathon and is not counted as new hackathon functionality.' '' 'Local history (preserved in archive blob of GitHub commit 8a344b7177be0311f939a7f80eede5e5a864f3dc):' '' '- 513aeae chore: import Oct 24 pre-hackathon baseline' '- ce12cc6 fix: pre-existing Phase 01 repairs' '- 47dd903 chore: verify Phase 01 file hashes' '' 'This source-import commit is dated by GitHub Actions at publication time; it does not rewrite historical Git commit timestamps.' > HISTORICAL_COMMITS.md
           git add -A
-          git commit -m "chore: merge audited historical RoboLN checkpoint commits"
+          git commit -m "chore: publish audited pre-existing Phase 01 source snapshot"
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
           registry-url: 'https://registry.npmjs.org'
-      - name: Generate reproducible frontend dependency lockfile
+      - name: Generate frontend dependency lockfile from registry
         working-directory: frontend
         run: npm install --package-lock-only --ignore-scripts --no-audit --no-fund
-      - name: Commit resolved lockfile separately
+      - name: Commit genuine npm lockfile separately
         shell: bash
         run: |
           git add frontend/package-lock.json
-          git commit -m "build: save registry-resolved npm lockfile"
-      - name: Publish only fast-forward commits
+          git commit -m "build: add npm registry-resolved frontend lockfile"
+      - name: Push fast-forward-only source commits
         run: git push origin HEAD:main
