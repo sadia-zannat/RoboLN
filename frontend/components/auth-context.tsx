@@ -1,7 +1,7 @@
 'use client';
 import React,{createContext,useContext,useEffect,useState,useCallback} from 'react';
 import {useRouter,usePathname} from 'next/navigation';
-import {api,ApiError,User} from '@/lib/api';
+import {api,User} from '@/lib/api';
 
 type AuthContext={user:User|null;loading:boolean;reload:()=>Promise<void>;setUser:(u:User|null)=>void};
 const Context=createContext<AuthContext|null>(null);
@@ -11,7 +11,7 @@ export function AuthProvider({children}:{children:React.ReactNode}){
   const [loading,setLoading]=useState(true);
   const router=useRouter();const path=usePathname();
   const reload=useCallback(async()=>{try{setUser(await api<User>('/auth/me'));}catch{setUser(null);}finally{setLoading(false);}},[]);
-  useEffect(()=>{void reload();},[reload]);
+  useEffect(()=>{let live=true;api<User>('/auth/me').then(u=>{if(live)setUser(u)}).catch(()=>{if(live)setUser(null)}).finally(()=>{if(live)setLoading(false)});return()=>{live=false};},[]);
   useEffect(()=>{if(!loading && !user && path!=='/login' && path!=='/register'){
     const destination=path.startsWith('/')?path:'/projects';
     router.replace('/login?next='+encodeURIComponent(destination));

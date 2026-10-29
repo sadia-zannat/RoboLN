@@ -22,9 +22,9 @@ function Navigation({pid,path,onNavigate}:{pid:string|null;path:string;onNavigat
 export function AppShell({children}:{children:React.ReactNode}){
  const {user,setUser}=useAuth();const {mode,setMode}=useTheme();const path=usePathname();const router=useRouter();
  const nav=useNavHistory();const pid=projectIdFromPath(path);
- const [projects,setProjects]=useState<Project[]>([]);const [drawer,setDrawer]=useState(false);const [search,setSearch]=useState(false);const [term,setTerm]=useState('');const [logoutError,setLogoutError]=useState('');
- useEffect(()=>{if(user)api<Project[]>('/projects').then(setProjects).catch(()=>setProjects([]));else setProjects([]);},[user,path]);
- useEffect(()=>{setDrawer(false);setSearch(false);},[path]);
+ const [projectCache,setProjectCache]=useState<{userId:string;items:Project[]}|null>(null);const projects=projectCache?.userId===user?.id?projectCache.items:[];const [drawer,setDrawer]=useState(false);const [search,setSearch]=useState(false);const [term,setTerm]=useState('');const [logoutError,setLogoutError]=useState('');
+ useEffect(()=>{let live=true;if(user)api<Project[]>('/projects').then(items=>{if(live)setProjectCache({userId:user.id,items})}).catch(()=>{if(live)setProjectCache({userId:user.id,items:[]})});return()=>{live=false};},[user,path]);
+ useEffect(()=>{queueMicrotask(()=>{setDrawer(false);setSearch(false);});},[path]);
  useEffect(()=>{
   const titles:Record<string,string>={'/projects':'Projects','/settings':'Settings','/login':'Sign in','/register':'Create account'};
   const section=titles[path]||(pid?pageSegment(path):'Not found');
@@ -50,7 +50,7 @@ export function AppShell({children}:{children:React.ReactNode}){
   return base;
  },[active?.name,path,pid]);
  if(path==='/login'||path==='/register'||!user)return <>{children}</>;
- const signout=async()=>{try{await api('/auth/logout',{method:'POST'});setUser(null);router.replace('/login');}catch(e){setLogoutError(e instanceof Error?e.message:'Could not sign out');}};
+ const signout=async()=>{try{await api('/auth/logout',{method:'POST'});setProjectCache(null);setUser(null);router.replace('/login');}catch(e){setLogoutError(e instanceof Error?e.message:'Could not sign out');}};
  const switchProject=(id:string)=>{if(id)router.push(projectUrl(id,'plan'));};
  return <div className="app-frame"><a className="skip-link" href="#main-content">Skip to content</a>
   <aside className="sidebar">
