@@ -1,0 +1,30 @@
+name: Resolve frontend dependency lockfile
+on:
+  push:
+    paths:
+      - 'frontend/package.json'
+      - '.github/workflows/resolve-lockfile.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  resolve:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          registry-url: 'https://registry.npmjs.org'
+      - name: Generate actual dependency resolution
+        working-directory: frontend
+        run: npm install --package-lock-only --ignore-scripts --no-audit --no-fund
+      - name: Verify reproducible installation
+        working-directory: frontend
+        run: npm ci --no-audit --no-fund
+      - name: Upload resulting lockfile
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-lockfile
+          path: frontend/package-lock.json
+          if-no-files-found: error
