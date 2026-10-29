@@ -22,7 +22,7 @@ function Navigation({pid,path,onNavigate}:{pid:string|null;path:string;onNavigat
 export function AppShell({children}:{children:React.ReactNode}){
  const {user,setUser}=useAuth();const {mode,setMode}=useTheme();const path=usePathname();const router=useRouter();
  const nav=useNavHistory();const pid=projectIdFromPath(path);
- const [projectCache,setProjectCache]=useState<{userId:string;items:Project[]}|null>(null);const projects=projectCache?.userId===user?.id?projectCache.items:[];const [drawer,setDrawer]=useState(false);const [search,setSearch]=useState(false);const [term,setTerm]=useState('');const [logoutError,setLogoutError]=useState('');
+ const [projectCache,setProjectCache]=useState<{userId:string;items:Project[]}|null>(null);const projects=projectCache && user && projectCache.userId===user.id?projectCache.items:[];const [drawer,setDrawer]=useState(false);const [search,setSearch]=useState(false);const [term,setTerm]=useState('');const [logoutError,setLogoutError]=useState('');
  useEffect(()=>{let live=true;if(user)api<Project[]>('/projects').then(items=>{if(live)setProjectCache({userId:user.id,items})}).catch(()=>{if(live)setProjectCache({userId:user.id,items:[]})});return()=>{live=false};},[user,path]);
  useEffect(()=>{queueMicrotask(()=>{setDrawer(false);setSearch(false);});},[path]);
  useEffect(()=>{
